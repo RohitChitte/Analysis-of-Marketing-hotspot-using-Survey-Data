@@ -6,9 +6,9 @@ from flask_cors import CORS, cross_origin
 import shutil, os
 import json
 
-from com_in_ineuron_ai_speech_to_text.transcriptGenerator import generateTranscript
-from com_in_ineuron_ai_spellingcorrector.spellcorrector import spell_corrector
-from com_in_ineuron_ai_keywordspotter.keywordSpotter import AddMultiKeywords
+from file_ai_speech_to_text.transcriptGenerator import generateTranscript
+from file_ai_spellingcorrector.spellcorrector import spell_corrector
+from file_ai_keywordspotter.keywordSpotter import AddMultiKeywords
 
 
 app = Flask(__name__)

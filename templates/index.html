@@ -2,16 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BrandMeasure</title>
+    <title>CRM</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="../static/js/index.js"></script>
 </head>
 <body>
 
-<!--<input type="file" id="upload" />-->
-<audio id="audio" controls>
-  <source src="" id="src" />
-</audio>
+
 
 <form id="upload-file" method="post" enctype="multipart/form-data">
     <fieldset>
@@ -23,7 +20,8 @@
     </fieldset>
 
     <fieldset>
-        <button id="start-processing-btn" type="button">StartProcessing</button>
+        <!--<button id="start-processing-btn" type="button">StartProcessing</button>   -->
+        <input type="button" onclick="window.location.href='http://127.0.0.1:5000/startprocessing';" class="btn btn-warning btn-lg" value="StartProcessing" target="_blank"/>
     </fieldset>
 </form>
 

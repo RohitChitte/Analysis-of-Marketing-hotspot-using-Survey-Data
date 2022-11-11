@@ -5,10 +5,11 @@ from flask import Response
 from flask_cors import CORS, cross_origin
 import shutil, os
 import json
+import pandas
 
-from com_in_ineuron_ai_speech_to_text.transcriptGenerator import generateTranscript
-from com_in_ineuron_ai_spellingcorrector.spellcorrector import spell_corrector
-from com_in_ineuron_ai_keywordspotter.keywordSpotter import AddMultiKeywords
+from file_ai_speech_to_text.transcriptGenerator import generateTranscript
+from file_ai_spellingcorrector.spellcorrector import spell_corrector
+from file_ai_keywordspotter.keywordSpotter import AddMultiKeywords
 
 
 app = Flask(__name__)
@@ -27,20 +28,20 @@ class ClientService:
         outputResponseObj = {}
         for val in self.fileList:
             inputFileTranscriptedOp = generateTranscript(os.path.join(self.FolderPath,val), self.separatedOutputFiles)
-        print(inputFileTranscriptedOp)
+
         outputResponseObj["inputFileTranscriptedOp"] = inputFileTranscriptedOp
 
         spellCorrectedOpMap = {}
         for val in inputFileTranscriptedOp.keys():
             spellcorrectedOp = spell_corrector(inputFileTranscriptedOp[val])
-            # print("Input Text : ", outputText[val])
-            # print("Corrected Text : ", spellcorrectedOp)
+
             spellCorrectedOpMap[val] = spellcorrectedOp
             # inputFileTranscriptedOp[val] = spellcorrectedOp
         outputResponseObj["spellCorrectedOpMap"] = spellCorrectedOpMap
-        print(inputFileTranscriptedOp)
+
 
         extractedKeywordMap = {}
+        extractedKeywordMap_2 = {}
         for val in inputFileTranscriptedOp.keys():
             adding = AddMultiKeywords(inputFileTranscriptedOp[val],
                                       {"place": ["england"],
@@ -48,7 +49,23 @@ class ClientService:
                                        "game": ["football"]})
             result = adding.addkey()
             extractedKeywordMap[val] = result
-        outputResponseObj["extractedKeywors"] = extractedKeywordMap
+            result_2 = adding.key_value()
+            extractedKeywordMap_2[val] = result_2
+        newoutputdict = {}
+        newoutputdict_2 = {}
+
+        for i in extractedKeywordMap.keys():
+            if extractedKeywordMap[i] != []:
+                newoutputdict[i] = extractedKeywordMap[i]
+
+        for i in extractedKeywordMap_2.keys():
+            if extractedKeywordMap_2[i] != {}:
+                newoutputdict_2[i] = extractedKeywordMap_2[i]
+
+
+
+        outputResponseObj["extractedKeywors"] = newoutputdict
+        outputResponseObj["extractedKeywors_2"] = newoutputdict_2
 
         return outputResponseObj
 
@@ -85,22 +102,19 @@ def getInputFIle():
     jsonStr = json.dumps(opReap, ensure_ascii=False).encode('utf8')
     return Response(jsonStr.decode())
 
-
-@app.route("/startprocessing", methods=["POST"])
-def processInputFile(clntApp=None):
+@app.route("/startprocessing")
+def render_html():
     opResponseObj = clntApp.processAudioFile()
     jsonStr = json.dumps(opResponseObj, ensure_ascii=False).encode('utf8')
-    # print(jsonStr.decode())
-    return Response(jsonStr.decode())
-    # return Response()
+    #print(opResponseObj)
+    output_1 = opResponseObj["inputFileTranscriptedOp"]
+    output_2 = opResponseObj["spellCorrectedOpMap"]
+    #output_3 = opResponseObj["extractedKeywors"]
+    output_3 = opResponseObj["extractedKeywors_2"]
+    return render_template("index2.html", output_1=output_1,output_2=output_2,output_3=output_3)
+
 
 
 if __name__ == "__main__":
-    #clntApp = ClientService()
-    #outputVal = processInputFile()
-   # host = '0.0.0.0'
-    #port = 5000
-    #httpd = simple_server.make_server(host, port, app)
-    #print("Serving on %s %d" % (host, port))
-    #httpd.serve_forever()
-    #app.run(debug=True)
+    clntApp = ClientService()
+    app.run(debug=True,port=5000)
