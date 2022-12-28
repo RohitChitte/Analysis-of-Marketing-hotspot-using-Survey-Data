@@ -9,9 +9,9 @@ class AddMultiKeywords:
 
     def addkey(self):
         keyword_processor = KeywordProcessor()
-        keyword_processor.add_keywords_from_dict(self.keyword_dict)  # excepts dictionary checks if values are lists then creates a new dictionary as a class variable.
-        extractedKeyword = keyword_processor.extract_keywords(self.text)  # if a sentence consist of a value persent in corpus dictionary created by above line in KeywordProcessor class then that key is selected  and put in to list
-        return extractedKeyword                                            # this list is returned
+        keyword_processor.add_keywords_from_dict(self.keyword_dict)
+        extractedKeyword = keyword_processor.extract_keywords(self.text)
+        return extractedKeyword
 
     def key_value(self):
         keyword_spotting = {}
